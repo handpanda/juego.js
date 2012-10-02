@@ -1,4 +1,4 @@
-var LOG_KEYBOARD = false;
+JUEGO.LOG_KEYBOARD = false;
 
 var KEY = {
 	UP : 38,
@@ -51,12 +51,12 @@ function resetKeys() {
 resetKeys();
 
 function keyDownHandler(e) {
-	//if (LOG_KEYBOARD) // console.log("Key " + e.keyCode + " down");
+	//if (JUEGO.LOG_KEYBOARD) // console.log("Key " + e.keyCode + " down");
 	if (keyboardState[e.keyCode] == KEYSTATE.UP) keyboardState[e.keyCode] = KEYSTATE.HIT;
 }
 
 function keyUpHandler(e) {
-	//if (LOG_KEYBOARD) // console.log("Key " + e.keyCode + " up");
+	//if (JUEGO.LOG_KEYBOARD) // console.log("Key " + e.keyCode + " up");
 	keyboardState[e.keyCode] = KEYSTATE.UP;
 }
 
@@ -85,3 +85,14 @@ function anyKeyHit() {
 	
 	return false;
 }
+/*
+JUEGO.keyboardEvents = [];
+
+JUEGO.KeyboardEvent = function( action, func ) {
+	this.action = action;
+	this.func = func;
+}
+
+function registerKeyEvent( action, func ) {
+	keyboardEvents.push( new JUEGO.KeyboardEvent( action, func ) );
+};*/

@@ -1,9 +1,10 @@
-var LOG_MOUSE = false;
+JUEGO.LOG_MOUSE = false;
 
 var BUTTONSTATE = {
-	UP : 0,
-	HIT : 1,
-	HELD : 2,
+	LETGO: 0,
+	UP : 1,
+	HIT : 2,
+	HELD : 3,
 }	
 	
 var mouseModes = {
@@ -28,6 +29,11 @@ var mouse = {
 	tileIndex: 0,
 	tileX: 0,
 	tileY: 0,
+	
+	selWidth: 0,
+	selHeight: 0,
+	
+	selection: null,
 }
 
 var leftButtonState = BUTTONSTATE.UP;
@@ -44,14 +50,14 @@ function mouseMoveHandler(e) {
 	mouse.offX = mouse.x - mouse.startX;
 	mouse.offY = mouse.y - mouse.startY;
 	
-	if (LOG_MOUSE) {
+	if (JUEGO.LOG_MOUSE) {
 		// console.log("Mouse moved to " + mouse.x + "," + mouse.y);
 	}
 }
 
 function mouseDownHandler(e) {
-	//if (LOG_MOUSE) // console.log("Mouse button down");
-	if (leftButtonState == BUTTONSTATE.UP) {
+	//if (JUEGO.LOG_MOUSE) // console.log("Mouse button down");
+	if (leftButtonState == BUTTONSTATE.UP || leftButtonState == BUTTONSTATE.LETGO) {
 		leftButtonState = BUTTONSTATE.HIT;
 		
 		mouse.startX = mouse.x;
@@ -60,12 +66,17 @@ function mouseDownHandler(e) {
 }
 
 function mouseUpHandler(e) {
-	//if (LOG_MOUSE) // console.log("Mouse button up");
-	leftButtonState = BUTTONSTATE.UP;
+	//if (JUEGO.LOG_MOUSE) // console.log("Mouse button up");
+	if (leftButtonState == BUTTONSTATE.HIT || leftButtonState == BUTTONSTATE.HELD) {
+		leftButtonState = BUTTONSTATE.LETGO;
+	}
 }
 
 function mouseStateUpdater(canvas) {
+	if ( JUEGO.LOG_MOUSE ) console.log( "Mouse state: " + leftButtonState );
+
 	if (leftButtonState == BUTTONSTATE.HIT) leftButtonState = BUTTONSTATE.HELD;
+	if (leftButtonState == BUTTONSTATE.LETGO) leftButtonState = BUTTONSTATE.UP;
 	refX = canvas.offsetLeft;
 	refY = canvas.offsetTop;
 }
@@ -76,4 +87,8 @@ function mouseHit() {
 
 function mouseHeld() {
 	return (leftButtonState == BUTTONSTATE.HIT || leftButtonState == BUTTONSTATE.HELD);
+}
+
+function mouseLetGo() {
+	return ( leftButtonState == BUTTONSTATE.LETGO );
 }

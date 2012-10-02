@@ -1,4 +1,4 @@
-var imageManager = function( filename ) {
+var ImageManager = function( filename ) {
 	this.images = [];
 
 	/* Grab an image from it's JSON representation:
@@ -19,7 +19,7 @@ var imageManager = function( filename ) {
 		}
 	
 		// Load it if it hasn't been loaded already
-		var newImage = new animatedImage( JSONElement.filename, 
+		var newImage = new AnimatedImage( JSONElement.filename, 
 							   JSONElement.frameWidth,
 							   JSONElement.frameHeight,
 							   JSONElement.hGap,
@@ -29,11 +29,10 @@ var imageManager = function( filename ) {
 		images.push( newImage );					   
 							   
 		return newImage;
-		
 	}
 }
 
-var regularImage = function(filename) {
+var RegularImage = function(filename) {
 	this.image = new Image();
 	this.image.src = filename;
 
@@ -42,7 +41,7 @@ var regularImage = function(filename) {
 	};
 }
 
-var animatedImage = function(filename, frameWidth, frameHeight, hGap, vGap, seqs) {
+var AnimatedImage = function(filename, frameWidth, frameHeight, hGap, vGap, seqs) {
 	this.filename = filename;
 
 	this.image = new Image();
@@ -65,6 +64,8 @@ var animatedImage = function(filename, frameWidth, frameHeight, hGap, vGap, seqs
 		this.loaded = false;
 	}
 	
+	this.imgData = [];
+	
 	console.log(this.filename);
 	this.load = function() {
 		this.loaded = true;
@@ -72,6 +73,31 @@ var animatedImage = function(filename, frameWidth, frameHeight, hGap, vGap, seqs
 		this.hFrames = Math.floor(this.image.width / (this.frameWidth + hGap)); // Horizontal Frames
 		this.vFrames = Math.floor(this.image.height / (this.frameHeight + vGap)); // Vertical Frames	
 		this.numFrames = this.hFrames * this.vFrames;
+		
+		/* Trying to do image data for palette swapping
+		//context.save();
+		context.globalCompositeOperation = 'destination-out';
+		context.fillStyle = 'rgba(255, 255, 255, 255)';
+		context.fill();//Rect( 0, 0, this.image.width, this.image.height );
+
+		//context.restore();
+		context.globalCompositeOperation = 'source-over';
+		context.drawImage( this.image, 0, 0 );
+		for ( f = 0; f < this.numFrames; f++ ) {
+			var hFrame = f % this.hFrames;
+			var vFrame = Math.floor((f % this.numFrames) / this.hFrames);
+			this.imgData[ f ] = context.getImageData( hFrame * (this.frameWidth + this.hGap), vFrame * (this.frameHeight + this.vGap), this.frameWidth, this.frameHeight );
+		}		
+		*/
+		var frames = [];
+		
+		for ( r = 0; r < this.vFrames; r++ ) {
+			for ( c = 0; c < this.hFrames; c++ ) {
+				frames.push( r * this.hFrames + c );
+			}
+		}
+
+		this.frameArray = new TileArray	( 1, this.hFrames, frames );
 		
 		for (var f = 0; f < this.numFrames; f++) {
 			this.seqIndices[f] = -1;
@@ -97,9 +123,13 @@ var animatedImage = function(filename, frameWidth, frameHeight, hGap, vGap, seqs
 	this.draw = function(context, posX, posY, frame, scale, hFlip, vFlip) {
 		if (!this.loaded) this.load(); // Assumes all loading takes place before drawing is attempted
 
-		if (frame > this.numFrames) return;
+		if (frame >= this.numFrames) return;
 
-		if (this.seqIndices[frame] != -1) {
+		if (this.seqIndices[frame] === undefined) {
+			console.warn( "animatedImage " + filename + ": frame " + frame + " out of range (" + this.numFrames + ")" );
+		}
+		
+		if (this.seqIndices[frame] != -1 && this.seqIndices[frame] !== undefined) {
 			var seq = this.seqs[this.seqIndices[frame]];
 			if (seq[3]) frame = seq[2][Math.floor(counter / seq[1]) % seq[0]];
 		} 
@@ -116,6 +146,9 @@ var animatedImage = function(filename, frameWidth, frameHeight, hGap, vGap, seqs
 			context.scale(1, -1);			
 			context.translate(0, -this.frameHeight * scale);
 		}
+		
+		// NOPE!
+		//context.putImageData( this.imgData[ frame ], posX, posY );
 		
 		context.drawImage(this.image, hFrame * (this.frameWidth + hGap), vFrame * (this.frameHeight + vGap), this.frameWidth, this.frameHeight, 
 									  posX * (hFlip ? -1 : 1), posY * (vFlip ? -1 : 1), this.frameWidth * scale, this.frameHeight * scale);
@@ -136,7 +169,7 @@ var animatedImage = function(filename, frameWidth, frameHeight, hGap, vGap, seqs
 
 // Array version: [number of frames, time per frame, [frame indices]]
 
-var frameSequence = function(name, image, whichFrames, timePerFrame) {
+var FrameSequence = function(name, image, whichFrames, timePerFrame) {
 this.name = name;
 	this.image = image;
 	this.frameIndices = whichFrames;
@@ -152,7 +185,7 @@ this.name = name;
 	};
 }
 
-var animationRunner = function(hPos, vPos, scale, hFlip, vFlip, layer) {
+var AnimationRunner = function(hPos, vPos, scale, hFlip, vFlip, layer) {
 	this.hPos = hPos;
 	this.vPos = vPos;
 	this.scale = scale;

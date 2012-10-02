@@ -17,13 +17,27 @@ var ScrollBox = function( parameters ) {
 	this.vOffset = 0;
 	
 	this.setValues( parameters );
-	
-	this.numTiles = this.hTiles * this.vTiles;
-	this.hPixels = this.hTiles * this.tileW;
-	this.vPixels = this.vTiles * this.tileH;	
+
+	this.calcValues();
 	
 	this.updateScroll( 0, 0 );
 }	
+
+ScrollBox.prototype.screenXToTile = function ( posX ) {
+	return cap( Math.floor( ( posX + this.hScroll ) / this.tileW ), 0, this.hTiles );
+}
+
+ScrollBox.prototype.screenYToTile = function ( posY ) {
+	return cap( Math.floor( ( posY + this.vScroll ) / this.tileH ), 0, this.vTiles );
+}
+
+ScrollBox.prototype.snapXToGrid = function ( posX ) {
+	return this.screenXToTile( posX ) * this.tileW - this.hScroll;
+}
+
+ScrollBox.prototype.snapYToGrid = function ( posY ) {
+	return this.screenYToTile( posY ) * this.tileH - this.vScroll;
+}
 
 ScrollBox.prototype.updateScroll = function ( hScroll, vScroll ) {
 	if (this.hPixels > this.viewportW) {
@@ -67,4 +81,10 @@ ScrollBox.prototype.setValues = function ( values ) {
 			this[ key ] = newValue;
 		}
 	}		
+}
+
+ScrollBox.prototype.calcValues = function() {
+	this.numTiles = this.hTiles * this.vTiles;
+	this.hPixels = this.hTiles * this.tileW;
+	this.vPixels = this.vTiles * this.tileH;
 }

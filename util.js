@@ -48,7 +48,7 @@ var TileArray = function(layers, rowlength, tiles) {
 		return ( c >= 0 && c < this.rowlength && r >= 0 && r < this.collength );
 	}
 	
-	this.getSub = function( l, col, row, width, height ) {
+	this.getSub = function( l, row, col, width, height ) {
 		var sub = [];
 		
 		for ( r = row; r < row + height; r++ ) {
@@ -97,12 +97,4 @@ var drawRectangleOutline = function( context, x, y, w, h ) {
 	context.lineTo( x, y + h );
 	context.closePath();
 	context.stroke();
-}
-
-var toTile = function( val ) {
-	return Math.floor( val / tilesize );
-}
-
-var snapToGrid = function( val ) {
-	return Math.floor( val / tilesize ) * tilesize;
 }

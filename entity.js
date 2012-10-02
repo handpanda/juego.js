@@ -195,37 +195,3 @@ JUEGO.Entity = function( parameters ) {
 		}
 	}	
 }
-
-var EntityManager = function() {
-	
-	this.clear = function() {
-		this.men = [];
-		this.bugs = [];
-		this.traps = [];
-	}
-	
-	this.spawnFromLevelData = function(x, y, val) {
-	
-	}
-	
-	this.update = function() {
-	
-	}
-	
-	this.cull = function() {
-		
-	}
-	
-	this.addEntity = function(ent) {
-
-	}
-	
-	this.getSpawnedEntities = function() {
-	
-	}
-	
-	this.draw = function(context, layer) {
-	
-	}
-}
-	

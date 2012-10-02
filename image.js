@@ -126,7 +126,7 @@ var AnimatedImage = function(filename, frameWidth, frameHeight, hGap, vGap, seqs
 		if (frame >= this.numFrames) return;
 
 		if (this.seqIndices[frame] === undefined) {
-			console.warn( "animatedImage " + filename + ": frame " + frame + " out of range (" + this.numFrames + ")" );
+		//	console.warn( "animatedImage " + filename + ": frame " + frame + " out of range (" + this.numFrames + ")" );
 		}
 		
 		if (this.seqIndices[frame] != -1 && this.seqIndices[frame] !== undefined) {

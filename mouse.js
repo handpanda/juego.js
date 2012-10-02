@@ -11,30 +11,62 @@ var mouseModes = {
 	PUT: 0,
 	GET: 1,
 	SET: 2,
+	COPY: 3,
 }	
 
-var mouse = {
-	x: 0,
-	y: 0,
+var Mouse = function() {
+	this.x = 0;
+	this.y = 0;
 
-	startX: 0,
-	startY: 0,
-	offX: 0,
-	offY: 0,	
+	this.startX = 0;
+	this.startY = 0;
+	this.offX = 0;
+	this.offY = 0;
+
+	this.layer = 3;
+	this.separatelayers = false;
+	this.mode = mouseModes.PUT;
+	this.currentanim = 0;
+	this.tileX = 0;
+	this.tileY = 0;
+
+	this.selecting = false;
+	this.selWidth = 0;
+	this.selHeight = 0;
+
+	this.selection = null;
 	
-	layer: 3,
-	separatelayers: false,
-	mode: mouseModes.PUT,
-	currentanim: 0,
-	tileIndex: 0,
-	tileX: 0,
-	tileY: 0,
-	
-	selWidth: 0,
-	selHeight: 0,
-	
-	selection: null,
+	this.box = null;
 }
+
+Mouse.prototype.selectFromArray = function( arr, layer ) {
+	if ( this.box == null ) return;
+
+	mouse.selection = [];
+	
+	var y = this.box.screenYToTile( mouse.startY ), x = this.box.screenXToTile( mouse.startX );
+	var w = this.selWidth, 
+		h = this.selHeight;
+	
+	if ( h < 0 ) {
+		y = y + h;
+		h *= -1;
+	}	
+	if ( w < 0 ) {
+		x = x + w;
+		w *= -1;
+	}
+
+	this.selection = arr.getSub( layer, y, x, w, h );
+	
+	console.log( "--Selection--" );
+	console.log( this.selection.tiles );
+	this.selection.map( function( l, c, r, val ) {
+		console.log( l + " " + c + " " + r + " " + val );
+	});
+}
+
+mouse = new Mouse();
 
 var leftButtonState = BUTTONSTATE.UP;
 var refX = 0;

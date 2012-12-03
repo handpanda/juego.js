@@ -124,3 +124,7 @@ function mouseHeld() {
 function mouseLetGo() {
 	return ( leftButtonState == BUTTONSTATE.LETGO );
 }
+
+function clearMouse() { 
+	leftButtonState = BUTTONSTATE.UP;	
+}

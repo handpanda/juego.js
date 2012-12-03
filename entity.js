@@ -84,11 +84,11 @@ JUEGO.Entity = function( parameters ) {
 			(right1 > left2) &&
 			(left1 < right2)) { 
 		
-			// The two objects' collision boxes overlap
+			// The two Entity' collision boxes overlap
 			return true;
 		}
 		
-		// The two objects' collision boxes do not overlap
+		// The two Entity' collision boxes do not overlap
 		return false;
 	}
 	

@@ -43,9 +43,9 @@ var ScrollBox = function( parameters ) {
 		this.hOffset = 0; 		// Horizontal Offset, horizontal distance (x-axis) from the upper-left corner of the viewport going left to the nearest gridline
 		this.vOffset = 0; 		// Vertical Offset, vertical distance (y-axis) from the upper-left corner of the viewport going up to the nearest gridline
 	
-	this.setValues( parameters );
-
 	this.calcValues();
+	
+	this.setValues( parameters );
 	
 	this.updateScroll();
 }	

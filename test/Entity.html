@@ -1,0 +1,126 @@
+<html>
+	<title>Entity Testbed</title>
+
+	<head>
+		<script type="text/javascript" src="../jquery-1.7.min.js"></script>
+		<script type="text/javascript" src="../keyboard.js"></script>
+		<script type="text/javascript" src="../TileArray.js"></script>
+		<script type="text/javascript" src="../ScrollBox.js"></script>
+		<script type="text/javascript" src="../Entity.js"></script>
+		<script type="text/javascript" src="../Line.js"></script>
+		<script type="text/javascript" src="../Level.js"></script>	
+		<script type="text/javascript" src="../Shape.js"></script>
+		<script type="text/javascript" src="../Ray.js"></script>
+		<script type="text/javascript" src="../RayHit.js"></script>
+		<script type="text/javascript" src="../Vec2.js"></script>
+		<script type="text/javascript" src="../mouse.js"></script>		
+		<script type="text/javascript">
+			var canvas, context;
+			
+			var test = null;
+
+			var BounceCastTest = function() {
+				this.level = new Level();
+
+				// Random rectangles
+				for ( var i = 0; i < 5; i++ ) {
+					this.level.shapes.push( new Shape().Rectangle( Math.random() * 300, Math.random() * 300, Math.random() * 100, Math.random() * 100 ) );
+				}
+
+				// Random polygons
+				for ( var i = 0; i < 0; i++ ) {
+					var numPoints = 2 + Math.random() * 4
+					var points = [];
+
+					for ( var j = 0; j < numPoints; j++ ) {
+						points.push( new Vec2( Math.random() * 300, Math.random() * 300 ) );
+					}
+
+					this.level.shapes.push( new Shape().Loop( points ) );
+				}
+
+				this.line = new Line();
+			}
+
+			BounceCastTest.prototype.update = function() {
+				this.line.p1.set(mouse.start);
+				this.line.p2.set(mouse.pos);
+
+				var points = this.level.bouncecast( this.line, 10 );
+				var chain = new Shape().Chain( points );
+
+				context.clearRect( 0, 0, canvas.width, canvas.height );
+
+				context.strokeStyle = "red";
+				context.lineWidth = 2;
+
+				this.line.draw( context );
+				for ( s in this.level.shapes ) {
+					this.level.shapes[s].draw( context );
+				}
+
+				context.strokeStyle = "blue";
+				chain.draw( context );
+
+				mouseStateUpdater( canvas );
+			}						
+
+			var MaterialTest = function() {
+				this.level = new Level();
+
+				// Random rectangles
+				for ( var i = 0; i < 5; i++ ) {
+					shape = new Shape().Rectangle( Math.random() * 300, Math.random() * 300, Math.random() * 100, Math.random() * 100 );
+	
+					for ( l in shape.lines ) {
+						shape.lines[l].material = Math.floor( Math.random() + 0.5 );
+					}
+
+					this.level.shapes.push( new Shape().fromLines( shape.lines ) );
+				}
+
+				this.line = new Line();
+			}
+
+			MaterialTest.prototype.update = function() {
+				this.line.p1.set(mouse.start);
+				this.line.p2.set(mouse.pos);
+
+				var points = this.level.bouncecast( this.line, 10 );
+				var chain = new Shape().Chain( points );
+
+				context.clearRect( 0, 0, canvas.width, canvas.height );
+
+				context.strokeStyle = "red";
+				context.lineWidth = 2;
+
+				this.line.draw( context );
+				for ( s in this.level.shapes ) {
+					this.level.shapes[s].materialDraw( context );
+				}
+
+				context.strokeStyle = "blue";
+				chain.draw( context );
+
+				mouseStateUpdater( canvas );
+			}	
+
+			$(window).load( function () {
+				canvas = document.getElementById( "screen" );
+				context = canvas.getContext( "2d" );
+
+				test = new MaterialTest();
+
+				setInterval( update, 60 );											
+			});
+
+			function update() {
+				test.update();
+			}
+
+		</script>
+	</head>
+	<body>
+		<canvas id="screen" width="640" height="480"></canvas>
+	</body>
+</html>

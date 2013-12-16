@@ -8,10 +8,13 @@ Vec2.prototype.zero = function() {
 	this.y = 0;
 }
 
+<<<<<<< HEAD
 Vec2.prototype.copy = function() {
 	return new Vec2( this.x, this.y );
 }
 
+=======
+>>>>>>> e81eb59e574eed68dcb0933126393aebbe187df7
 Vec2.prototype.dot = function(v) {
 	return this.x * v.x + this.y * v.y;
 }

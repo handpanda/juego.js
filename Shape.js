@@ -17,12 +17,15 @@ function chainFromPoints( points, loop ) {
 	return lines;
 }
 
+<<<<<<< HEAD
 Shape.prototype.fromLines = function( lines ) {
 	this.lines = lines;
 
 	return this;
 }
 
+=======
+>>>>>>> 313e58bbecc851b8809902c0e03c0a0568ef667f
 Shape.prototype.Loop = function( points ) {
 	this.lines = chainFromPoints( points, true );
 
@@ -97,6 +100,7 @@ Shape.prototype.draw = function( context ) {
 	for ( l in this.lines ) {
 		this.lines[l].draw( context );
 	}
+<<<<<<< HEAD
 }
 
 Shape.prototype.materialDraw = function( context ) {
@@ -107,4 +111,6 @@ Shape.prototype.materialDraw = function( context ) {
 
 		this.lines[l].draw( context );
 	}
+=======
+>>>>>>> 313e58bbecc851b8809902c0e03c0a0568ef667f
 }

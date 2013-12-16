@@ -56,6 +56,7 @@
 
 var RegularImage = function( filename ) {
 	this.image = new Image(); // Image is a built-in Javascript class
+
 	this.image.src = filename; // The image only loads if src is set
 	//if ( batch.length == 0 ) {
 	//	this.image.src = this.filename;

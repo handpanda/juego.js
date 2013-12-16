@@ -149,6 +149,7 @@ Level.prototype.bouncecast = function( line, maxBounces ) {
 	points.push( line.p1 );
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	var line2 = new Line( line );
 
 	do {
@@ -169,6 +170,8 @@ Level.prototype.bouncecast = function( line, maxBounces ) {
 		}
 	} while( points.length < maxBounces );
 =======
+=======
+>>>>>>> 313e58bbecc851b8809902c0e03c0a0568ef667f
 	var ray = new Ray();
 
 	var line2 = new Line( line );
@@ -184,6 +187,9 @@ Level.prototype.bouncecast = function( line, maxBounces ) {
 		}
 
 	} while( ray.dir && points.length < maxBounces);
+<<<<<<< HEAD
+>>>>>>> 313e58bbecc851b8809902c0e03c0a0568ef667f
+=======
 >>>>>>> 313e58bbecc851b8809902c0e03c0a0568ef667f
 
 	return points;
@@ -202,15 +208,21 @@ Level.prototype.shapecast = function( line ) {
 		closestRayHits.sort( function( a, b ) { return Math.abs( a.point.x - line.p1.x ) - Math.abs( b.point.x - line.p1.x ) } );
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		return closestRayHits[0]; 
 	} else {
 		return null;
 =======
+=======
+>>>>>>> 313e58bbecc851b8809902c0e03c0a0568ef667f
 		var dir = closestRayHits[0].reflect( line.getDirection() );
 
 		return new Ray( closestRayHits[0].point, dir ); 
 	} else {
 		return new Ray( line.p2.copy(), null );
+<<<<<<< HEAD
+>>>>>>> 313e58bbecc851b8809902c0e03c0a0568ef667f
+=======
 >>>>>>> 313e58bbecc851b8809902c0e03c0a0568ef667f
 	}	
 }

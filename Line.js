@@ -2,7 +2,6 @@ var Line = function( x1, y1, x2, y2 ) {
 	this.p1 = new Vec2();
 	this.p2 = new Vec2();
 
-<<<<<<< HEAD
 	this.material = 0;
 
 	if ( x1 instanceof Line ) {
@@ -10,11 +9,6 @@ var Line = function( x1, y1, x2, y2 ) {
 		this.p2.set( x1.p2 );
 
 		this.material = x1.material;
-=======
-	if ( x1 instanceof Line ) {
-		this.p1.set( x1.p1 );
-		this.p2.set( x1.p2 );
->>>>>>> 313e58bbecc851b8809902c0e03c0a0568ef667f
 	} else if ( x1 instanceof Vec2 ) {
 		this.p1.set( x1 );
 		this.p2.set( y1 );

@@ -217,7 +217,7 @@ Entity.prototype.overlaps = function ( otherEntity ) {
 	// Rectangle and a line	
 	} else if ( this.shape == SHAPE.rect && otherEntity.shape == SHAPE.line ) {
 		return this.rectOverlapsLine( otherEntity );
-	} else if ( this.shapw == SHAPE.line && otherEntity.shape == SHAPE.rect ) { 
+	} else if ( this.shape == SHAPE.line && otherEntity.shape == SHAPE.rect ) { 
 		return otherEntity.rectOverlapsLine( this );
 	}
 	
@@ -235,10 +235,12 @@ Entity.prototype.rectOverlapsLine = function( otherEntity ) {
 	var topLine = new Line( this.posX, this.posY, this.posX + this.width, this.posY); 
 	var bottomLine = new Line( this.posX, this.posY + this.height, this.posX + this.width, this.posY + this.height);
 
-	if ( leftLine.intersect( otherEntity ) != null || 
-		 rightLine.intersect( otherEntity ) != null ||
-		 topLine.intersect( otherEntity ) != null ||
-		 bottomLine.intersect( otherEntity ) != null ) {
+	var line = new Line( otherEntity.p1, otherEntity.p2 );
+
+	if ( leftLine.intersect( line ) != null || 
+		 rightLine.intersect( line ) != null ||
+		 topLine.intersect( line ) != null ||
+		 bottomLine.intersect( line ) != null ) {
 		return true;
 	}
 
@@ -463,7 +465,7 @@ Entity.prototype.drawCollisionBox = function( context ) {
 		
 		context.fillStyle = "black";
 
-		// Rectangles to indicate collision
+		//  Rectangles to indicate collision
 		if (this.collideDown == 1) { 
 			context.fillRect(this.posX + this.width / 4, this.posY + this.height * 3 / 4, this.width / 2, this.height / 4);
 		}

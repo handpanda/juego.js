@@ -1,5 +1,5 @@
-var IMGKeys = new AnimatedImage( "../common/img/keys.png", 15, 15, 0, 0 );
-var IMGSpacebar = new AnimatedImage( "../common/img/spacebar.png", 75, 15, 0, 0 );
+var IMGKeys = new AnimatedImage( "../juego.js/img/keys.png", 15, 15, 0, 0 );
+var IMGSpacebar = new AnimatedImage( "../juego.js/img/spacebar.png", 75, 15, 0, 0 );
 
 var KEYANIM = {
 	A: new Animation( "A", IMGKeys, [ 0, 1 ], 3 ),

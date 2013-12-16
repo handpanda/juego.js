@@ -20,13 +20,10 @@ var between = function( v, u1, u2 ) {
 	return ( ( v >= u1 - fudge && v <= u2 + fudge ) || ( v >= u2 - fudge && v <= u1 + fudge ) );
 }
 
-<<<<<<< HEAD
 Line.prototype.getDirection = function() {
 	return this.p2.minus( this.p1 );
 }
 
-=======
->>>>>>> e81eb59e574eed68dcb0933126393aebbe187df7
 Line.prototype.intersect = function( line ) {
 	var result = null;	
 
@@ -61,7 +58,6 @@ Line.prototype.intersect = function( line ) {
 	return result;
 }
 
-<<<<<<< HEAD
 Line.prototype.rayIntersect = function( line ) {
 	var point = this.intersect( line );
 
@@ -76,8 +72,6 @@ Line.prototype.rayIntersect = function( line ) {
 	return new RayHit( point, normal, 0 );
 }
 
-=======
->>>>>>> e81eb59e574eed68dcb0933126393aebbe187df7
 Line.prototype.draw = function( context ) {
 	context.beginPath();
 	context.moveTo( this.p1.x, this.p1.y );	

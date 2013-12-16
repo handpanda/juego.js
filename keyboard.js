@@ -1,6 +1,7 @@
-JUEGO.LOG_KEYBOARD = false;
+LOG_KEYBOARD = false;
 
 var KEY = {
+	SPACE : 32,
 	UP : 38,
 	DOWN : 40,
 	LEFT : 37,
@@ -31,68 +32,82 @@ var KEY = {
 	X : 88,
 	Y : 89,
 	Z : 90,
-	NUM_KEYS : 128,
 };
 
 var KEYSTATE = {
 	UP : 0,
 	HIT : 1,
 	HELD : 2,
+	LETGO : 3,
+	DOUBLETAPPED : 4,
 }
 
 var keyboardState = [];
+var keyLastHit = [];
+var updateCounter = 0;
+var doubleTapInterval = 5;
 
 function resetKeys() {
-	for (var i = 0; i < KEY.NUM_KEYS; i++) {
-		keyboardState[i] = KEYSTATE.UP;
+	for ( key in KEY ) {
+		keyboardState[KEY[key]] = KEYSTATE.UP;
+		keyLastHit[KEY[key]] = -Infinity;
 	}
 }
 
-resetKeys();
-
-function keyDownHandler(e) {
-	//if (JUEGO.LOG_KEYBOARD) // console.log("Key " + e.keyCode + " down");
-	if (keyboardState[e.keyCode] == KEYSTATE.UP) keyboardState[e.keyCode] = KEYSTATE.HIT;
+function keyDownHandler( e ) {
+	if ( LOG_KEYBOARD ) console.log( "Key " + e.keyCode + " down" );
+	if ( keyboardState[e.keyCode] == KEYSTATE.UP ) {	
+		keyboardState[e.keyCode] = KEYSTATE.HIT;
+	}
 }
 
-function keyUpHandler(e) {
-	//if (JUEGO.LOG_KEYBOARD) // console.log("Key " + e.keyCode + " up");
-	keyboardState[e.keyCode] = KEYSTATE.UP;
+function keyUpHandler( e ) {
+	if ( LOG_KEYBOARD ) console.log( "Key " + e.keyCode + " up" );
+	keyboardState[e.keyCode] = KEYSTATE.LETGO;
+	if (updateCounter - keyLastHit[e.keyCode] < doubleTapInterval)  {
+		keyboardState[e.keyCode] = KEYSTATE.DOUBLETAPPED;
+	}
+	keyLastHit[e.keyCode] = updateCounter;
 }
 
 function keyboardStateUpdater() {
-	for (var i = 0; i < KEY.NUM_KEYS; i++) {
-		if (keyboardState[i] == KEYSTATE.HIT) {
-			keyboardState[i] = KEYSTATE.HELD;
+	for ( key in KEY ) {
+		if ( keyboardState[KEY[key]] == KEYSTATE.HIT ) {
+			keyboardState[KEY[key]] = KEYSTATE.HELD;
+		}
+		if ( keyboardState[KEY[key]] == KEYSTATE.LETGO || keyboardState[KEY[key]] == KEYSTATE.DOUBLETAPPED ) {
+			keyboardState[KEY[key]] = KEYSTATE.UP;
 		}
 	}
+	updateCounter++;
 }
 
-function keyHit(key) {
-	return (keyboardState[key] == KEYSTATE.HIT);
+function keyDoubleTapped(key) {
+	return ( keyboardState[key] == KEYSTATE.DOUBLETAPPED );
 }
 
-function keyHeld(key) {
-	return (keyboardState[key] == KEYSTATE.HIT || keyboardState[key] == KEYSTATE.HELD);
+function keyHit( key ) {
+	return ( keyboardState[key] == KEYSTATE.HIT );
+}
+
+function keyHeld( key ) {
+	return ( keyboardState[key] == KEYSTATE.HIT || keyboardState[key] == KEYSTATE.HELD );
+}
+
+function keyLetGo( key ) {
+	return ( keyboardState[key] == KEYSTATE.LETGO );
 }
 
 function anyKeyHit() {
-	for (var i = 0; i < KEY.NUM_KEYS; i++) {
-		if (keyboardState[i] == KEYSTATE.HIT || keyboardState[i] == KEYBOARD.HELD) {
+	for ( key in KEY ) {
+		if ( keyboardState[KEY[key]] == KEYSTATE.HIT || keyboardState[KEY[key]] == KEYBOARD.HELD ) {
 			return true;
 		}
 	}
 	
 	return false;
 }
-/*
-JUEGO.keyboardEvents = [];
 
-JUEGO.KeyboardEvent = function( action, func ) {
-	this.action = action;
-	this.func = func;
-}
-
-function registerKeyEvent( action, func ) {
-	keyboardEvents.push( new JUEGO.KeyboardEvent( action, func ) );
-};*/
+resetKeys();
+document.onkeyup = keyUpHandler;
+document.onkeydown = keyDownHandler;

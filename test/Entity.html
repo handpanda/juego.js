@@ -1,0 +1,80 @@
+<html>
+	<title>Entity Testbed</title>
+
+	<head>
+		<script type="text/javascript" src="../jquery-1.7.min.js"></script>
+		<script type="text/javascript" src="../keyboard.js"></script>
+		<script type="text/javascript" src="../TileArray.js"></script>
+		<script type="text/javascript" src="../ScrollBox.js"></script>
+		<script type="text/javascript" src="../Entity.js"></script>
+		<script type="text/javascript" src="../Line.js"></script>
+		<script type="text/javascript" src="../Vec2.js"></script>
+		<script type="text/javascript" src="../mouse.js"></script>		
+		<script type="text/javascript">
+			var canvas, context;
+			
+			var test = null;
+
+			var LineTest = function() {
+				this.rect = new Entity( 100, 100, 30, 30 );
+				this.line = new Line();
+
+				this.lines = [];
+				for ( var i = 0; i < 8; i++ ) {
+					var angle = Math.PI * 2 / 8 * i;
+
+					this.lines.push( new Line( 200, 200, 200 + 100 * Math.cos( angle ), 200 + 100 * Math.sin( angle ) ) );	
+				}
+			}
+
+			LineTest.prototype.update = function() {
+				this.line.p1 = mouse.start;
+				this.line.p2 = mouse.pos;
+
+				context.clearRect( 0, 0, canvas.width, canvas.height );
+
+				context.fillStyle = "red";
+				if ( this.rect.rectOverlapsLine( this.line ) ) context.fillStyle = "blue";
+				this.rect.drawRect( context );
+
+				context.strokeStyle = "red";
+				context.lineWidth = 2;
+
+				this.line.draw( context );
+
+				for ( l in this.lines ) {
+					this.drawIntersection( this.line, this.lines[l] );	
+				}
+
+				mouseStateUpdater( canvas );
+			}
+
+			LineTest.prototype.drawIntersection = function( testline, line ) {
+				context.strokeStyle = "red";
+			    var inter = line.intersect( testline );
+				if ( inter != null ) {
+					context.strokeStyle = "blue";
+					context.fillRect( inter.x - 5, inter.y - 5, 10, 10 );
+				}
+				line.draw( context );
+			}
+
+			$(window).load( function () {
+				canvas = document.getElementById( "screen" );
+				context = canvas.getContext( "2d" );
+
+				test = new LineTest();
+
+				setInterval( update, 60 );											
+			});
+
+			function update() {
+				test.update();
+			}
+
+		</script>
+	</head>
+	<body>
+		<canvas id="screen" width="640" height="480"></canvas>
+	</body>
+</html>

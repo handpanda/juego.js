@@ -56,7 +56,13 @@
 
 var RegularImage = function( filename ) {
 	this.image = new Image(); // Image is a built-in Javascript class
-	this.image.src = filename; // The image only loads if src is set
+	//this.image.src = filename; // The image only loads if src is set
+	//if ( batch.length == 0 ) {
+	//	this.image.src = this.filename;
+	//	this.image.onLoad = loadFromBatch;
+	//	this.image.onerror = loadFromBatch;
+	//}
+	//batch.push( [this, this.filename]);
 }
 
 RegularImage.prototype.draw = function( context, posX, posY, scale ) {
@@ -70,6 +76,7 @@ function loadFromBatch() {
 	if ( batch.length > 0 ) {
 		batch[0][0].image.src = batch[0][1];
 		batch[0][0].image.onLoad = loadFromBatch;
+		//batch[0][0].image.onerror = loadFromBatch
 	}
 }
 
@@ -81,12 +88,13 @@ var AnimatedImage = function( filename, frameWidth, frameHeight, hGap, vGap ) {
 	this.filename = filename;
 
 	this.image = new Image(); // Image is a built-in Javascript class
-	this.image.src = filename; // The image only loads if src is set
+	//this.image.src = filename; // The image only loads if src is set
 	this.ready = false;
 
 	if ( batch.length == 0 ) {
 		this.image.src = this.filename;
 		this.image.onLoad = loadFromBatch;
+		//this.image.onerror = loadFromBatch;
 	}
 	batch.push( [this, this.filename]);
 

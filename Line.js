@@ -35,7 +35,8 @@ Line.prototype.intersect = function( line ) {
 		var slope2 = ( line.p2.y - line.p1.y ) / ( line.p2.x - line.p1.x );
 		var yInt2 = line.p1.y - ( line.p1.x - this.p1.x ) * slope2;
 
-		if ( between( yInt2, this.p1.y, this.p2.y ) && between( this.p1.x, line.p1.x, line.p2.x ) ) {
+		if ( between( yInt2, this.p1.y, this.p2.y ) && between( this.p1.x, line.p1.x, line.p2.x ) &&
+			 between( yInt2, line.p1.y, line.p2.y )) {
 			result = new Vec2( this.p1.x, yInt2 );
 		}
 	} else if ( Math.abs( line.p2.x - line.p1.x ) < 0.01 ) {
@@ -48,9 +49,11 @@ Line.prototype.intersect = function( line ) {
 			var yInt2 = line.p1.y - this.p1.y - (line.p1.x - this.p1.x) * slope2;
 
 			var intX = yInt2 / ( slope1 - slope2 ) + this.p1.x;
+			var intY = (intX - this.p1.x) * slope2 + yInt2 + this.p1.y
 
-			if ( between( intX, this.p1.x, this.p2.x ) && between( intX, line.p1.x, line.p2.x ) ) {
-				result = new Vec2( intX, (intX - this.p1.x) * slope2 + yInt2 + this.p1.y );
+			if ( between( intX, this.p1.x, this.p2.x ) && between( intX, line.p1.x, line.p2.x ) &&
+				 between( intY, this.p1.y, this.p2.y ) && between( intY, line.p1.y, line.p2.y ) ) {
+				result = new Vec2( intX, intY );
 			}
 		}
 	}

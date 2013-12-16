@@ -1,3 +1,4 @@
-var Ray = function() {
-	var lines = [];
+var Ray = function( point, dir ) {
+	this.point = point;
+	this.dir = dir;
 }

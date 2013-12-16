@@ -1,5 +1,5 @@
 var Shape = function() {
-	this.lines = [];
+	this.lines = []
 }
 
 // Make a chain of lines from a list of points
@@ -40,12 +40,24 @@ Shape.prototype.Rectangle = function( x, y, w, h ) {
 	return this;
 }
 
-/*Shape.prototype.add = function( point ) {
+Shape.prototype.copy = function() {
+	var s = new Shape();
+
 	for ( l in this.lines ) {
-		this.lines.p1.add( point );
-		this.lines.p1.add( point );
+		s.lines.push( new Line( this.lines[l] ) );
+	}	
+
+	return s;
+}
+
+Shape.prototype.add = function( point ) {
+	for ( l in this.lines ) {
+		this.lines[l].p1.add( point );
+		this.lines[l].p2.add( point );
 	}
-}*/
+
+	return this;
+}
 
 Shape.prototype.intersect = function( line ) {
 	var points = [];

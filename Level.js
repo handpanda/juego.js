@@ -50,6 +50,8 @@ var Level = function() {
 	this.image = null;
 
 	this.properties = [];
+
+	this.shapes = [];
 }
 
 ///////////////////////
@@ -140,6 +142,49 @@ Level.prototype.setBackgrounds = function(backgrounds) {
 	for (var i = 0; i < backgrounds.length; i++) {
 		this.parallaxingBackground.addLayer(new BackgroundLayer(backgrounds[i].image, backgrounds[i].scrollSpeed));
 	}
+}
+
+Level.prototype.bouncecast = function( line, maxBounces ) {
+	var points = [];	
+	points.push( line.p1 );
+
+	var ray = new Ray();
+
+	var line2 = new Line( line );
+
+	do {
+		ray = this.shapecast( line2 );
+		points.push( ray.point );
+
+		if ( ray.dir != null ) {
+			// Fudge along the ray a bit so we don't hit the same shape again
+			line2.p1.set( ray.point.plus( ray.dir.times( 3 ) ) );
+			line2.p2.set( line2.p1.plus( ray.dir.scale( 300 ) ) );
+		}
+
+	} while( ray.dir && points.length < maxBounces);
+
+	return points;
+}
+
+Level.prototype.shapecast = function( line ) {
+	var closestRayHits = [];
+
+	for ( s in this.shapes ) {
+		rayHits = this.shapes[s].rayIntersect( line );
+
+		if ( rayHits.length > 0 ) closestRayHits.push( rayHits[0] );
+	}
+
+	if ( closestRayHits.length > 0 ) {
+		closestRayHits.sort( function( a, b ) { return Math.abs( a.point.x - line.p1.x ) - Math.abs( b.point.x - line.p1.x ) } );
+
+		var dir = closestRayHits[0].reflect( line.getDirection() );
+
+		return new Ray( closestRayHits[0].point, dir ); 
+	} else {
+		return new Ray( line.p2.copy(), null );
+	}	
 }
 
 Level.prototype.setScrollBoxInitialPosition = function(scrollBox) {

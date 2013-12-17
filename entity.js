@@ -119,6 +119,9 @@ Entity.prototype.clearVel = function() {
 Entity.prototype.turnAround = function() {
 	if (this.faceDir == DIR.left) this.faceDir = DIR.right;
 	else if (this.faceDir == DIR.right) this.faceDir = DIR.left;
+
+	if ( this.faceDir == DIR.up ) this.faceDir = DIR.down;
+	else if ( this.faceDir == DIR.down ) this.faceDir = DIR.up;
 }		
 
 /////////////////

@@ -208,6 +208,9 @@ var AnimationRunner = function( hPos, vPos, hFlip, vFlip ) {
 	this.repetitions = 0; // Number of times to repeat limitedAnim
 	
 	this.newAnim = false; // Whether a new animation has been set
+
+	this.frameWidth = 0; // Width of the animation frame
+	this.frameHeight = 0; // Height of the animation frame
 }
 
 AnimationRunner.prototype.defaultScale = 1.0;
@@ -220,6 +223,8 @@ AnimationRunner.prototype.setLoopingAnim = function( anim ) {
 	this.loopingAnim = anim;
 	this.frame = 0;
 	this.newAnim = true;
+	this.frameWidth = anim.image.frameWidth;
+	this.frameHeight = anim.image.frameHeight;
 }
 	
 AnimationRunner.prototype.setLimitedAnim = function( anim, repetitions ) {
@@ -227,6 +232,8 @@ AnimationRunner.prototype.setLimitedAnim = function( anim, repetitions ) {
 	this.repetitions = repetitions;
 	this.frame = 0;
 	this.newAnim = true;
+	this.frameWidth = anim.image.frameWidth;
+	this.frameHeight = anim.image.frameHeight;	
 }
 	
 AnimationRunner.prototype.hasCompleted = function() {
@@ -314,8 +321,9 @@ AnimationRunner.prototype.setScale = function( scale ) {
 // Draw the sprite
 AnimationRunner.prototype.draw = function( context ) {
 	context.save();
-		context.translate( this.hPos, this.vPos );
+		context.translate( this.hPos + this.frameWidth / 2, this.vPos + this.frameWidth / 2);
 		context.rotate( this.angle );
+		context.translate( -this.frameWidth / 2, -this.frameHeight / 2 );
 
 		if ( this.isVisible ) {
 			if ( this.repetitions > 0 ) {

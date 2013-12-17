@@ -50,6 +50,8 @@
 			}
 */
 
+var allimages = [];
+
 //////////////////
 // REGULARIMAGE //
 //////////////////
@@ -58,6 +60,8 @@ var RegularImage = function( filename ) {
 	this.image = new Image(); // Image is a built-in Javascript class
 
 	this.image.src = filename; // The image only loads if src is set
+
+	allimages.push( this.image );
 	//if ( batch.length == 0 ) {
 	//	this.image.src = this.filename;
 	//	this.image.onLoad = loadFromBatch;
@@ -89,15 +93,17 @@ var AnimatedImage = function( filename, frameWidth, frameHeight, hGap, vGap ) {
 	this.filename = filename;
 
 	this.image = new Image(); // Image is a built-in Javascript class
+
+	allimages.push( this.image );
 	//this.image.src = filename; // The image only loads if src is set
 	this.ready = false;
 
-	if ( batch.length == 0 ) {
+	//if ( batch.length == 0 ) {
 		this.image.src = this.filename;
-		this.image.onLoad = loadFromBatch;
+	//	this.image.onLoad = loadFromBatch;
 		//this.image.onerror = loadFromBatch;
-	}
-	batch.push( [this, this.filename]);
+	//}
+	//batch.push( [this, this.filename]);
 
 	this.frameWidth = frameWidth; // The width of each frame
 	this.frameHeight = frameHeight; // The height of each frame
@@ -131,7 +137,7 @@ AnimatedImage.prototype.deriveConstants = function() {
 }
 
 AnimatedImage.prototype.draw = function( context, posX, posY, frame, scale, hFlip, vFlip ) {
-	if ( !this.ready ) this.deriveConstants(); // Assumes all loading takes place before drawing is attempted
+	if ( this.image.complete ) this.deriveConstants(); // Assumes all loading takes place before drawing is attempted
 
 	if ( frame >= this.numFrames ) return;
 	

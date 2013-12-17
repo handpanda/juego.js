@@ -33,9 +33,10 @@ var mouse = {
 
 // What the left mouse button can do
 var BUTTONSTATE = {
-	UP : 0, // Not pressed
-	HIT : 1, // Just pressed, a single click
-	HELD : 2, // Has been pressed for a while
+	UP: 0, // Not pressed
+	HIT: 1, // Just pressed, a single click
+	HELD: 2, // Has been pressed for a while
+	LETGO: 3, // Just released
 }
 
 // What the left mouse button is doing right now
@@ -72,7 +73,7 @@ function mouseUpHandler(e) {
 
 	mouse.start.set( mouse.pos );
 
-	leftButtonState = BUTTONSTATE.UP;
+	leftButtonState = BUTTONSTATE.LETGO;
 }
 
 // Change the left button state from "just pressed" to "pressed" if necessary
@@ -83,6 +84,7 @@ function mouseStateUpdater( canvas ) {
 	mouse.origin.y = rect.top;
 
 	if (leftButtonState == BUTTONSTATE.HIT) leftButtonState = BUTTONSTATE.HELD;
+	if (leftButtonState == BUTTONSTATE.LETGO) leftButtonState = BUTTONSTATE.UP;
 }
 
 // Whether the left button was just pressed
@@ -93,6 +95,16 @@ function mouseHit() {
 // Whether the left button is pressed
 function mouseHeld() {
 	return (leftButtonState == BUTTONSTATE.HIT || leftButtonState == BUTTONSTATE.HELD);
+}
+
+// Whether the left button is pressed
+function mouseLetGo() {
+	return (leftButtonState == BUTTONSTATE.LETGO);
+}
+
+// Whether the left button is pressed
+function mouseUp() {
+	return (leftButtonState == BUTTONSTATE.UP || leftButtonState == BUTTONSTATE.LETGO);
 }
 
 // Register the event handlers

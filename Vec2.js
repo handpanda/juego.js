@@ -1,3 +1,5 @@
+define( [], function() {
+
 Vec2 = function(x, y) {
 	this.x = x;
 	this.y = y;
@@ -102,3 +104,7 @@ Vec2.prototype.rotate = function(a) {
 
 	return this;
 }
+
+return Vec2;
+
+});

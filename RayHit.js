@@ -1,3 +1,5 @@
+define( [], function() {
+
 var RayHit = function( point, normal, material ) {
 	this.point = point;
 	this.normal = normal;
@@ -11,3 +13,7 @@ RayHit.prototype.reflect = function( incidentVector ) {
 	var cosine = this.normal.times( incident.dot( this.normal ) );
 	return cosine.plus( cosine.minus( incident ) );
 }
+
+return RayHit;
+
+});

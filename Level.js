@@ -11,7 +11,6 @@
 			-a collision layer for interaction with the level
 			-a spawn layer for specifying points where objects will be created
 		-the tile size of the images used in the level
-		-several scrolling backgrounds
 		-an image to use for the draw layers
 		
 		loadFromTiledJSON() - Read level data from a JSON file written by the tile editor program Tiled
@@ -34,6 +33,12 @@
 			draw
 				call once per cycle 
 */
+
+define( ["juego/TileArray", 
+		 "juego/Line",
+		 "juego/AnimatedImage",
+		 "juego/Region",
+		 ], function( TileArray, Line, AnimatedImage, Region ) {
 
 var Level = function() {
 	this.hTiles = 0;
@@ -134,17 +139,9 @@ Level.prototype.loadFromTiledJSON = function( levelFilename, callback ) {
 	});	
 }
 
-/* Set the background layer images
- *  imageFileNames - the file names of the background layer images
- *		in order from front to back
- */
-Level.prototype.setBackgrounds = function(backgrounds) {
-	for (var i = 0; i < backgrounds.length; i++) {
-		this.parallaxingBackground.addLayer(new BackgroundLayer(backgrounds[i].image, backgrounds[i].scrollSpeed));
-	}
-}
+Level.prototype.bouncecast = function( line, maxBounces, ignoreMaterial ) {
+	if ( ignoreMaterial === undefined ) ignoreMaterial = false;
 
-Level.prototype.bouncecast = function( line, maxBounces ) {
 	var points = [];	
 	points.push( line.p1 );
 
@@ -155,7 +152,7 @@ Level.prototype.bouncecast = function( line, maxBounces ) {
 		if ( rayHit ) {
 			points.push( rayHit.point );
 
-			if ( !rayHit.material ) break;
+			if ( !ignoreMaterial && !rayHit.material ) break;
 
 			var dir = rayHit.reflect( line2.getDirection() );
 
@@ -377,3 +374,7 @@ Level.prototype.drawForeground = function( context, scrollBox ) {
 		}
 	}
 }
+
+return Level;
+
+});

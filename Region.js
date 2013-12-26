@@ -1,3 +1,5 @@
+define( ["juego/Entity"], function( Entity ) {
+
 var Region = function( params ) {
 	Entity.call( this );
 	
@@ -36,3 +38,7 @@ Region.prototype.draw = function( context ) {
 		context.globalAlpha = 1.0;
 	}
 }
+
+return Region;
+
+});

@@ -1,3 +1,5 @@
+define( [ "juego/mouse", "juego/Shape", "juego/Line", "juego/Vec2" ], function( mouse, Shape, Line, Vec2 ) {
+
 var ShapeTest = function() {
 	this.shapes = [];
 
@@ -19,7 +21,7 @@ var ShapeTest = function() {
 	this.line = new Line();
 }
 
-ShapeTest.prototype.update = function() {
+ShapeTest.prototype.update = function( canvas, context ) {
 	this.line.p1 = mouse.start;
 	this.line.p2 = mouse.pos;
 
@@ -60,5 +62,9 @@ ShapeTest.prototype.update = function() {
 		context.fillRect( closestPoints[0].x - 5, closestPoints[0].y - 5, 10, 10 );
 	}
 
-	mouseStateUpdater( canvas );
+	mouse.updateState( canvas );
 }
+
+return ShapeTest;
+
+});

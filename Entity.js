@@ -1,29 +1,4 @@
-var LOG_COLLISION = false;
-
-var DIR = {
-	left: { X: -1, Y: 0 },
-	right: { X: 1, Y: 0 },
-	down: { X: 0, Y: 1 },
-	up: { X: 0, Y: -1 },
-};
-
-/* Collision Groups
- * 
- * If two entities' collision groups are the same, and they are not None, they will not register collisions with each other.
- * Otherwise, they will. 
- * This is mainly used for bullets, bullets one ship shoots can't hurt that ship or its friends
- * 
- */
-var GROUP = {
-	none: 0,
-	player: 1,
-	enemy: 2
-}
-
-var SHAPE = {
-	rect: 0,
-	line: 1,
-}
+define( ["juego/Vec2", "juego/Line"], function( Vec2, Line ) {
 
 ////////////
 // ENTITY //
@@ -51,9 +26,9 @@ var Entity = function( posX, posY, width, height ) {
 	this.width = width;
 	this.height = height;
 
-	this.collisionGroup = GROUP.none; // Entities with the same collision group can't hit each other
+	this.collisionGroup = Entity.GROUP.none; // Entities with the same collision group can't hit each other
 
-	this.faceDir = DIR.left; // Facing direction
+	this.faceDir = Entity.DIR.left; // Facing direction
 	this.state = 0; // General-purpose state variable. Not all entities will use it
 
 	this.pathFollower = null;
@@ -87,7 +62,34 @@ var Entity = function( posX, posY, width, height ) {
 	this.mouseSelected = false;	
 
 	// For overlap testing
-	this.shape = SHAPE.rect;
+	this.shape = Entity.SHAPE.rect;
+}
+
+Entity.LOG_COLLISION = false;
+
+Entity.DIR = {
+	left: { X: -1, Y: 0 },
+	right: { X: 1, Y: 0 },
+	down: { X: 0, Y: 1 },
+	up: { X: 0, Y: -1 },
+};
+
+/* Collision Groups
+ * 
+ * If two entities' collision groups are the same, and they are not None, they will not register collisions with each other.
+ * Otherwise, they will. 
+ * This is mainly used for bullets, bullets one ship shoots can't hurt that ship or its friends
+ * 
+ */
+Entity.GROUP = {
+	none: 0,
+	player: 1,
+	enemy: 2
+}
+
+Entity.SHAPE = {
+	rect: 0,
+	line: 1,
 }
 
 Entity.prototype.constructor = Entity;
@@ -117,11 +119,11 @@ Entity.prototype.clearVel = function() {
 ////////////////
 
 Entity.prototype.turnAround = function() {
-	if (this.faceDir == DIR.left) this.faceDir = DIR.right;
-	else if (this.faceDir == DIR.right) this.faceDir = DIR.left;
+	if (this.faceDir == Entity.DIR.left) this.faceDir = Entity.DIR.right;
+	else if (this.faceDir == Entity.DIR.right) this.faceDir = Entity.DIR.left;
 
-	if ( this.faceDir == DIR.up ) this.faceDir = DIR.down;
-	else if ( this.faceDir == DIR.down ) this.faceDir = DIR.up;
+	if ( this.faceDir == Entity.DIR.up ) this.faceDir = Entity.DIR.down;
+	else if ( this.faceDir == Entity.DIR.down ) this.faceDir = Entity.DIR.up;
 }		
 
 /////////////////
@@ -129,8 +131,8 @@ Entity.prototype.turnAround = function() {
 /////////////////
 
 Entity.prototype.faceTowards = function( otherEntity ) {
-	if ( otherEntity.posX < this.posX ) this.faceDir = DIR.left;
-	else this.faceDir = DIR.right;
+	if ( otherEntity.posX < this.posX ) this.faceDir = Entity.DIR.left;
+	else this.faceDir = Entity.DIR.right;
 }
 
 /////////////////
@@ -192,14 +194,14 @@ Entity.prototype.canOverlap = function ( otherEntity ) {
 	return ( this != otherEntity &&
 			 !this.isGhost && 
 			 !otherEntity.isGhost &&
-		 	 ( ( this.collisionGroup == GROUP.none ) || 
-		 	   ( otherEntity.collisionGroup == GROUP.none ) || 
+		 	 ( ( this.collisionGroup == Entity.GROUP.none ) || 
+		 	   ( otherEntity.collisionGroup == Entity.GROUP.none ) || 
 		 	   ( this.collisionGroup != otherEntity.collisionGroup ) ) );
 }
 
 Entity.prototype.overlaps = function ( otherEntity ) {
 	// Two upright rectangles
-	if ( this.shape == SHAPE.rect && otherEntity.shape == SHAPE.rect ) {
+	if ( this.shape == Entity.SHAPE.rect && otherEntity.shape == Entity.SHAPE.rect ) {
 		var left1 = this.posX + this.velX;
 		var left2 = otherEntity.posX + ( otherEntity.velX < 0 ? otherEntity.velX : 0 );
 		var right1 = left1 + this.width + this.velX;
@@ -218,9 +220,9 @@ Entity.prototype.overlaps = function ( otherEntity ) {
 			return true;
 		}
 	// Rectangle and a line	
-	} else if ( this.shape == SHAPE.rect && otherEntity.shape == SHAPE.line ) {
+	} else if ( this.shape == Entity.SHAPE.rect && otherEntity.shape == Entity.SHAPE.line ) {
 		return this.rectOverlapsLine( otherEntity );
-	} else if ( this.shape == SHAPE.line && otherEntity.shape == SHAPE.rect ) { 
+	} else if ( this.shape == Entity.SHAPE.line && otherEntity.shape == Entity.SHAPE.rect ) { 
 		return otherEntity.rectOverlapsLine( this );
 	}
 	
@@ -490,3 +492,6 @@ Entity.prototype.onClick = function() {
 	
 }
 	
+return Entity;
+
+});

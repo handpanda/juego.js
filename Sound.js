@@ -1,3 +1,5 @@
+define( [], function() {
+
 var Sound = function( filename ) {
 	this.audio = new Audio( filename );
 }
@@ -16,3 +18,7 @@ Sound.prototype.loop = function() {
 	this.audio.play();
 	this.audio.loop = true;
 }
+
+return Sound;
+
+});

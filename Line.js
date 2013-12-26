@@ -1,3 +1,5 @@
+define( ["juego/RayHit", "juego/Vec2"], function( RayHit, Vec2 ) {
+
 var Line = function( x1, y1, x2, y2 ) {
 	this.p1 = new Vec2();
 	this.p2 = new Vec2();
@@ -85,3 +87,7 @@ Line.prototype.draw = function( context ) {
 	context.lineTo( this.p2.x, this.p2.y );
 	context.stroke();
 }
+
+return Line;
+
+});

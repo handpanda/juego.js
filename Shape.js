@@ -1,3 +1,5 @@
+define( ["juego/Line"], function( Line ) {
+
 var Shape = function() {
 	this.lines = []
 }
@@ -108,3 +110,7 @@ Shape.prototype.materialDraw = function( context ) {
 		this.lines[l].draw( context );
 	}
 }
+
+return Shape;
+
+});

@@ -1,3 +1,5 @@
+define( ["juego/Entity", "juego/Line", "juego/mouse"], function( Entity, Line, mouse ) {
+
 var LineTest = function() {
 	this.rect = new Entity( 100, 100, 30, 30 );
 	this.line = new Line();
@@ -10,7 +12,7 @@ var LineTest = function() {
 	}
 }
 
-LineTest.prototype.update = function() {
+LineTest.prototype.update = function( canvas, context ) {
 	this.line.p1 = mouse.start;
 	this.line.p2 = mouse.pos;
 
@@ -26,13 +28,13 @@ LineTest.prototype.update = function() {
 	this.line.draw( context );
 
 	for ( l in this.lines ) {
-		this.drawIntersection( this.line, this.lines[l] );	
+		this.drawIntersection( context, this.line, this.lines[l] );	
 	}
 
-	mouseStateUpdater( canvas );
+	mouse.updateState( canvas );
 }
 
-LineTest.prototype.drawIntersection = function( testline, line ) {
+LineTest.prototype.drawIntersection = function( context, testline, line ) {
 	context.strokeStyle = "red";
     var inter = line.intersect( testline );
 	if ( inter != null ) {
@@ -41,3 +43,7 @@ LineTest.prototype.drawIntersection = function( testline, line ) {
 	}
 	line.draw( context );
 }
+
+return LineTest;
+
+});

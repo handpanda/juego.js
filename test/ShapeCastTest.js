@@ -8,6 +8,8 @@
 	Test of the Level class shapecast() function for raycasting
 */
 
+define( ["juego/Level", "juego/Shape", "juego/Line", "juego/Vec2", "juego/mouse"], function( Level, Shape, Line, Vec2, mouse ) {
+
 var ShapeCastTest = function() {
 	this.level = new Level();
 
@@ -31,7 +33,7 @@ var ShapeCastTest = function() {
 	this.line = new Line();
 }
 
-ShapeCastTest.prototype.update = function() {
+ShapeCastTest.prototype.update = function( canvas, context ) {
 	this.line.p1 = mouse.start;
 	this.line.p2 = mouse.pos;
 
@@ -47,9 +49,9 @@ ShapeCastTest.prototype.update = function() {
 		this.level.shapes[s].draw( context );
 	}
 
-	if ( ray.dir != null ) {
+	if ( ray != null ) {
 		var point = ray.point;
-		var normal = ray.dir;
+		var normal = ray.normal;
 
 		context.fillStyle = "green";
 		context.fillRect( point.x-5, point.y-5, 10, 10 );
@@ -61,5 +63,9 @@ ShapeCastTest.prototype.update = function() {
 		context.stroke();
 	}
 
-	mouseStateUpdater( canvas );
+	mouse.updateState( canvas );
 }	
+
+return ShapeCastTest;
+
+});

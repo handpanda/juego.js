@@ -1,10 +1,8 @@
-//////////////
-// IMAGE.JS //
-//////////////
+////////////////////////
+// ANIMATIONRUNNER.JS //
+////////////////////////
 
 /*
-	A set of Javascript image utility classes
-
 		RegularImage - A simple, static image
 		AnimatedImage - An image divided into multiple frames
 		Animation - A list of frames ( an animation )
@@ -50,148 +48,7 @@
 			}
 */
 
-var allimages = [];
-
-//////////////////
-// REGULARIMAGE //
-//////////////////
-
-var RegularImage = function( filename ) {
-	this.image = new Image(); // Image is a built-in Javascript class
-
-	this.image.src = filename; // The image only loads if src is set
-
-	allimages.push( this.image );
-	//if ( batch.length == 0 ) {
-	//	this.image.src = this.filename;
-	//	this.image.onLoad = loadFromBatch;
-	//	this.image.onerror = loadFromBatch;
-	//}
-	//batch.push( [this, this.filename]);
-}
-
-RegularImage.prototype.draw = function( context, posX, posY, scale ) {
-	context.drawImage( this.image, posX, posY, this.image.width * scale, this.image.height * scale );
-}
-
-var batch = [];
-
-function loadFromBatch() {
-	batch.pop();
-	if ( batch.length > 0 ) {
-		batch[0][0].image.src = batch[0][1];
-		batch[0][0].image.onLoad = loadFromBatch;
-		//batch[0][0].image.onerror = loadFromBatch
-	}
-}
-
-///////////////////
-// ANIMATEDIMAGE //
-///////////////////
-
-var AnimatedImage = function( filename, frameWidth, frameHeight, hGap, vGap ) {
-	this.filename = filename;
-
-	this.image = new Image(); // Image is a built-in Javascript class
-
-	allimages.push( this.image );
-	//this.image.src = filename; // The image only loads if src is set
-	this.ready = false;
-
-	//if ( batch.length == 0 ) {
-		this.image.src = this.filename;
-	//	this.image.onLoad = loadFromBatch;
-		//this.image.onerror = loadFromBatch;
-	//}
-	//batch.push( [this, this.filename]);
-
-	this.frameWidth = frameWidth; // The width of each frame
-	this.frameHeight = frameHeight; // The height of each frame
-	
-	this.hGap = hGap; // Horizontal gap between frames
-	this.vGap = vGap; // Vertical gap between frames
-	
-	console.log( "[AnimatedImage] Loading animated image " + this.filename );
-}
-
-// Calculate a bunch of constant-value terms that can only be derived once the image is loaded and its width and height are known
-AnimatedImage.prototype.deriveConstants = function() {
-	this.hFrames = Math.floor( this.image.width / ( this.frameWidth + this.hGap ) ); // Number of frames in the horizontal direction
-	this.vFrames = Math.floor( this.image.height / ( this.frameHeight + this.vGap ) ); // Number of frames in the vertical direction
-	this.numFrames = this.hFrames * this.vFrames; // Total number of frames
-	
-	var frames = [];
-	
-	for ( r = 0; r < this.vFrames; r++ ) {
-		for ( c = 0; c < this.hFrames; c++ ) {
-			frames.push( r * this.hFrames + c );
-		}
-	}
-
-	// List of frames - this is just an array where every element is its index, i.e. [0, 1, 2, 3, 4, ... ]
-	this.frameArray = new TileArray	( 1, this.hFrames, frames );
-
-	this.ready = true;		
-	
-	// console.log( "Loaded image " + this.image.src + ", " + this.hFrames + " x " + this.vFrames + " tiles" ); 
-}
-
-AnimatedImage.prototype.draw = function( context, posX, posY, frame, scale, hFlip, vFlip ) {
-	if ( this.image.complete ) this.deriveConstants(); // Assumes all loading takes place before drawing is attempted
-
-	if ( frame >= this.numFrames ) return;
-	
-	// Which column and row of the sprite sheet
-	var hFrame = frame % this.hFrames;
-	var vFrame = Math.floor( ( frame % this.numFrames ) / this.hFrames );
-	
-	context.save();
-	
-	// Flip the image, if necessary, by flipping it across the axis and translating it back into place
-	if ( hFlip ) {
-		context.scale( -1, 1 );
-		context.translate( -this.frameWidth * scale, 0 );	
-	}
-	if ( vFlip ) {
-		context.scale( 1, -1 );			
-		context.translate( 0, -this.frameHeight * scale );
-	}
-	
-	// Draw the frame by drawing a rectangular sub-image of the sprite sheet
-	context.drawImage( 	this.image, 
-					    hFrame * ( this.frameWidth + this.hGap ), vFrame * ( this.frameHeight + this.vGap ), // Top left corner of the frame in the larger image
-						this.frameWidth, this.frameHeight, // Width and height of the frame
-						posX * ( hFlip ? -1 : 1 ), posY * ( vFlip ? -1 : 1 ), // Screen position to draw the frame
-						this.frameWidth * scale, this.frameHeight * scale ); // Screen size of frame
-						
-	context.restore();
-}
-
-///////////////
-// ANIMATION //
-/////////////// 
-
-var Animation = function( name, image, whichFrames, timePerFrame ) {
-	this.name = name; // Name of the animation
-	this.image = image; // Pointer to the image
-	this.frameIndices = whichFrames; // Array of frames to cycle through
-	this.numFrames = this.frameIndices.length; // How many frames
-	this.timePerFrame = timePerFrame; // How many cycles to spend on each frame
-}
-
-// Return a frame based on an external counter
-Animation.prototype.getFrameIndex = function( frameCounter ) {
-	return this.frameIndices[Math.floor( frameCounter / this.timePerFrame ) % this.numFrames];
-}
-	
-// Return whether or not each frame has been displayed
-Animation.prototype.hasCompleted = function( frameCounter ) {
-	return ( Math.floor( frameCounter / this.timePerFrame ) >= this.numFrames );
-}
-
-/////////////////////
-// ANIMATIONRUNNER //
-///////////////////// 
+define( ["juego/AnimatedImage"], function( AnimatedImage ) {
 
 var AnimationRunner = function( hPos, vPos, hFlip, vFlip ) {
 	this.hPos = hPos; // Horizontal pixel position 
@@ -350,3 +207,7 @@ AnimationRunner.prototype.draw = function( context ) {
 		}
 	context.restore();
 }
+
+return AnimationRunner;
+
+});

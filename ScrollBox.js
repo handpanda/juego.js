@@ -10,6 +10,8 @@
 	
 */
 
+define( [], function() {
+
 var ScrollBox = function( parameters ) {
 	
 	// Booleans
@@ -201,3 +203,7 @@ ScrollBox.prototype.setValues = function ( values ) {
 		}
 	}		
 }
+
+return ScrollBox;
+
+});

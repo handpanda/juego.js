@@ -8,6 +8,8 @@
 	Test ray intersection on a bunch of random shapes
 */
 
+define( ["juego/Shape", "juego/RayHit", "juego/Line", "juego/Vec2", "juego/mouse"], function( Shape, RayHit, Line, Vec2, mouse ) {
+
 var RayTest = function() {
 	this.shapes = [];
 
@@ -29,7 +31,7 @@ var RayTest = function() {
 	this.line = new Line();
 }
 
-RayTest.prototype.update = function() {
+RayTest.prototype.update = function( canvas, context ) {
 	this.line.p1 = mouse.start;
 	this.line.p2 = mouse.pos;
 
@@ -71,5 +73,9 @@ RayTest.prototype.update = function() {
 		context.stroke();
 	}
 
-	mouseStateUpdater( canvas );
+	mouse.updateState( canvas );
 }				
+
+return RayTest;
+
+});

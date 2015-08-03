@@ -10,8 +10,17 @@
 	
 */
 
+define( [], function() {
+
 var ScrollBox = function( parameters ) {
 	
+	// Booleans
+		this.canScrollV = true; // Vertical scrolling allowed
+		this.canScrollH = true; // Horizontal scrolling allowed
+
+	// Dimensionless quanities
+		this.scale = 1.0;		// Drawing scale
+
 	// Quantities measured in TILES
 
 		// Constant with scrolling 
@@ -42,10 +51,13 @@ var ScrollBox = function( parameters ) {
 		this.vScroll = 0; 		// Vertical Scroll, vertical offset (y-axis) from the origin in pixels
 		this.hOffset = 0; 		// Horizontal Offset, horizontal distance (x-axis) from the upper-left corner of the viewport going left to the nearest gridline
 		this.vOffset = 0; 		// Vertical Offset, vertical distance (y-axis) from the upper-left corner of the viewport going up to the nearest gridline
-	
-	this.calcValues();
-	
+
+		this.hShake = 0; 		// Horizontal Shake, measured in pixels
+		this.vShake = 0;		// Vertical Shake, measured in pixels
+
 	this.setValues( parameters );
+
+	this.calcValues();
 	
 	this.updateScroll();
 }	
@@ -61,27 +73,39 @@ ScrollBox.prototype.calcValues = function() {
 }
 
 ///////////////////
-// SCREEN TOTILE // Take screen coordinates and transfer them to the grid
+// SCREEN_TOTILE // Take screen coordinates and transfer them to the grid
 ///////////////////
 
 ScrollBox.prototype.screenXToTile = function ( posX ) {
-	return cap( Math.floor( ( posX + this.hScroll ) / this.tileW ), 0, this.hTiles );
+	return cap( Math.floor( ( posX / this.scale + this.hScroll ) / this.tileW ), 0, this.hTiles );
 }
 
 ScrollBox.prototype.screenYToTile = function ( posY ) {
-	return cap( Math.floor( ( posY + this.vScroll ) / this.tileH ), 0, this.vTiles );
+	return cap( Math.floor( ( posY / this.scale + this.vScroll ) / this.tileH ), 0, this.vTiles );
+}
+
+////////////////////
+// SCREEN_TOPIXEL // Convert screen coordinates to world pixel coordinates
+//////////////////// 
+
+ScrollBox.prototype.screenXToPixel = function ( posX ) {
+	return posX / this.scale + this.hScroll;
+}
+
+ScrollBox.prototype.screenYToPixel = function ( posY ) {
+	return posY / this.scale + this.vScroll;
 }
 
 /////////////////
-// SNAP TOGRID // Move a point to the nearest grid line
+// SNAP_TOGRID // Move a point to the nearest grid line
 ///////////////// 
 
 ScrollBox.prototype.snapXToGrid = function ( posX ) {
-	return this.screenXToTile( posX ) * this.tileW - this.hScroll;
+	return this.screenXToTile( posX ) * this.tileW;
 }
 
 ScrollBox.prototype.snapYToGrid = function ( posY ) {
-	return this.screenYToTile( posY ) * this.tileH - this.vScroll;
+	return this.screenYToTile( posY ) * this.tileH;
 }
 
 ///////////////
@@ -89,10 +113,19 @@ ScrollBox.prototype.snapYToGrid = function ( posY ) {
 ///////////////
 
 ScrollBox.prototype.setScroll = function( hScroll, vScroll ) {
-	this.hScroll = hScroll;
-	this.vScroll = vScroll;
+	if ( this.canScrollH ) this.hScroll = hScroll;
+	if ( this.canScrollV ) this.vScroll = vScroll;
 	
 	this.updateScroll();
+}
+
+///////////
+// SHAKE //
+///////////
+
+ScrollBox.prototype.shake = function( hShake, vShake ) {
+	this.hShake = hShake;
+	this.vShake = vShake;
 }
 
 //////////////////
@@ -101,8 +134,11 @@ ScrollBox.prototype.setScroll = function( hScroll, vScroll ) {
 
 ScrollBox.prototype.updateScroll = function() {
 
-	var hScroll = this.hScroll + this.hScrollSpeed;
-	var vScroll = this.vScroll + this.vScrollSpeed;
+	var hScroll = this.hScroll;
+	var vScroll = this.vScroll;
+
+	if ( this.canScrollH ) hScroll += this.hScrollSpeed;
+	if ( this.canScrollV ) vScroll += this.vScrollSpeed;
 
 	if ( this.hPixels > this.viewportW ) { // If the whole map does not fit in the viewport horizontally, we can scroll
 		
@@ -133,6 +169,17 @@ ScrollBox.prototype.updateScroll = function() {
 		this.vHiTileIndex = this.vTiles;
 		this.vOffset = 0;
 	}
+
+	this.hShake = -this.hShake * 0.75;
+	this.vShake = -this.vShake * 0.75;
+}
+
+//////////////////////
+// TRANSLATECONTEXT // Move a drawing context to where this says it should go
+//////////////////////
+
+ScrollBox.prototype.translateContext = function( context ) {
+	context.translate( -this.hScroll + this.hShake, -this.vScroll + this.vShake );
 }
 
 ///////////////
@@ -145,7 +192,7 @@ ScrollBox.prototype.setValues = function ( values ) {
 	for ( var key in values ) {
 		var newValue = values[ key ];
 		if ( newValue === undefined ) {
-			console.warn( 'ScrollBox: \'' + key + '\' parameter is undefined.' );
+			console.warn( 'ScrollBox: \'' + key + '\' parameter given value undefined.' );
 			continue;
 		}
 		
@@ -156,3 +203,7 @@ ScrollBox.prototype.setValues = function ( values ) {
 		}
 	}		
 }
+
+return ScrollBox;
+
+});

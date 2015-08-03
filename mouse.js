@@ -1,130 +1,120 @@
-JUEGO.LOG_MOUSE = false;
+define( ["juego/Vec2", "juego/Line"], function( Vec2, Line ) {
 
+/*
+	Mouse.js
+	
+	Utilities for mouse tracking
+	
+	Keeps track of mouse position and the left mouse button. You can get the mouse position in window coordinates
+	and whether the left button is not pressed, pressed, or was just pressed (being "just pressed" counts as being pressed)
+
+	HOW TO USE
+	
+	1. mouse.x and mouse.y are the coordinates of the mouse position
+	2. mouse.hit() returns whether the left mouse button was just pressed
+	3. mouse.held() returns whether the left mouse button is being held down. MouseHeld() is always true if MouseHit() is true
+	4. Call mouse.updateState() at the end of each cycle
+	
+*/
+
+// What the left mouse button can do
 var BUTTONSTATE = {
-	LETGO: 0,
-	UP : 1,
-	HIT : 2,
-	HELD : 3,
-}	
-	
-var mouseModes = {
-	PUT: 0,
-	GET: 1,
-	SET: 2,
-	COPY: 3,
-}	
+	UP: 0, // Not pressed
+	HIT: 1, // Just pressed, a single click
+	HELD: 2, // Has been pressed for a while
+	LETGO: 3, // Just released
+};
 
-var Mouse = function() {
-	this.x = 0;
-	this.y = 0;
+var mouse = {
 
-	this.startX = 0;
-	this.startY = 0;
-	this.offX = 0;
-	this.offY = 0;
+// Whether to output debugging data to the console
+	LOG_MOUSE: false,
 
-	this.layer = 3;
-	this.separatelayers = false;
-	this.mode = mouseModes.PUT;
-	this.currentanim = 0;
-	this.tileX = 0;
-	this.tileY = 0;
+// Horizontal and vertical position of the mouse pointer
+	pos: new Vec2(),
 
-	this.selecting = false;
-	this.selWidth = 0;
-	this.selHeight = 0;
+	start: new Vec2(),
+	off: new Vec2(),
 
-	this.selection = null;
-	
-	this.box = null;
-}
+	origin: new Vec2(),
 
-Mouse.prototype.selectFromArray = function( arr, layer ) {
-	if ( this.box == null ) return;
+	line: new Line( 0, 0, 0, 0 ),
+	currentEntity: null,
 
-	mouse.selection = [];
-	
-	var y = this.box.screenYToTile( mouse.startY ), x = this.box.screenXToTile( mouse.startX );
-	var w = this.selWidth, 
-		h = this.selHeight;
-	
-	if ( h < 0 ) {
-		y = y + h;
-		h *= -1;
-	}	
-	if ( w < 0 ) {
-		x = x + w;
-		w *= -1;
-	}
+	// Change the left button state from "just pressed" to "pressed" if necessary
+	updateState: function( canvas ) {
+		var rect = canvas.getBoundingClientRect();
 
-	this.selection = arr.getSub( layer, y, x, w, h );
-	
-	console.log( "--Selection--" );
-	console.log( this.selection.tiles );
-	this.selection.map( function( l, c, r, val ) {
-		console.log( l + " " + c + " " + r + " " + val );
-	});
-}
+		mouse.origin.x = rect.left;
+		mouse.origin.y = rect.top;
 
-mouse = new Mouse();
+		if (mouse.leftButtonState == BUTTONSTATE.HIT) mouse.leftButtonState = BUTTONSTATE.HELD;
+		if (mouse.leftButtonState == BUTTONSTATE.LETGO) mouse.leftButtonState = BUTTONSTATE.UP;
+	},	
 
-var leftButtonState = BUTTONSTATE.UP;
-var refX = 0;
-var refY = 0;
+	// What the left mouse button is doing right now
+	leftButtonState: BUTTONSTATE.UP,
 
-function mouseMoveHandler(e) {
-	mouse.x = e.pageX;
-	mouse.y = e.pageY;
+	// Update the mouse position when we receive a move event
+	moveHandler: function(e) {
+		mouse.pos.x = e.pageX - mouse.origin.x;
+		mouse.pos.y = e.pageY - mouse.origin.y;
 
-	mouse.x -= refX;
-	mouse.y -= refY;
-	
-	mouse.offX = mouse.x - mouse.startX;
-	mouse.offY = mouse.y - mouse.startY;
-	
-	if (JUEGO.LOG_MOUSE) {
-		// console.log("Mouse moved to " + mouse.x + "," + mouse.y);
-	}
-}
+		mouse.off.x = mouse.pos.x - mouse.start.x;
+		mouse.off.y = mouse.pos.y - mouse.start.y;
 
-function mouseDownHandler(e) {
-	//if (JUEGO.LOG_MOUSE) // console.log("Mouse button down");
-	if (leftButtonState == BUTTONSTATE.UP || leftButtonState == BUTTONSTATE.LETGO) {
-		leftButtonState = BUTTONSTATE.HIT;
-		
-		mouse.startX = mouse.x;
-		mouse.startY = mouse.y;
-	}
-}
+		mouse.line.x1 = mouse.start.x;
+		mouse.line.y1 = mouse.start.y;
+		mouse.line.x2 = mouse.pos.x;
+		mouse.line.y2 = mouse.pos.y;
 
-function mouseUpHandler(e) {
-	//if (JUEGO.LOG_MOUSE) // console.log("Mouse button up");
-	if (leftButtonState == BUTTONSTATE.HIT || leftButtonState == BUTTONSTATE.HELD) {
-		leftButtonState = BUTTONSTATE.LETGO;
-	}
-}
+		if (mouse.LOG_MOUSE) console.log("Mouse moved to " + mouse.x + "," + mouse.y);
+	},
 
-function mouseStateUpdater(canvas) {
-	if ( JUEGO.LOG_MOUSE ) console.log( "Mouse state: " + leftButtonState );
+	// Update the left button state when we receive and button press event
+	downHandler: function(e) {
+		if (mouse.LOG_MOUSE) console.log("Mouse button down");
 
-	if (leftButtonState == BUTTONSTATE.HIT) leftButtonState = BUTTONSTATE.HELD;
-	if (leftButtonState == BUTTONSTATE.LETGO) leftButtonState = BUTTONSTATE.UP;
-	refX = canvas.offsetLeft;
-	refY = canvas.offsetTop;
-}
+		mouse.start.set( mouse.pos );
 
-function mouseHit() {
-	return (leftButtonState == BUTTONSTATE.HIT);
-}
+		mouse.leftButtonState = BUTTONSTATE.HIT;
+	},
 
-function mouseHeld() {
-	return (leftButtonState == BUTTONSTATE.HIT || leftButtonState == BUTTONSTATE.HELD);
-}
+	// Update the left button state when we receive and button release event
+	upHandler: function(e) {
+	if (mouse.LOG_MOUSE) console.log("Mouse button up");
 
-function mouseLetGo() {
-	return ( leftButtonState == BUTTONSTATE.LETGO );
-}
+		mouse.start.set( mouse.pos );
 
-function clearMouse() { 
-	leftButtonState = BUTTONSTATE.UP;	
-}
+		mouse.leftButtonState = BUTTONSTATE.LETGO;
+	},
+
+	// Whether the left button was just pressed
+	hit: function() {
+		return (mouse.leftButtonState == BUTTONSTATE.HIT);
+	},
+
+	// Whether the left button is pressed
+	held: function() {
+		return (mouse.leftButtonState == BUTTONSTATE.HIT || mouse.leftButtonState == BUTTONSTATE.HELD);
+	},
+
+	// Whether the left button is pressed
+	letGo: function() {
+		return (mouse.leftButtonState == BUTTONSTATE.LETGO);
+	},
+
+	// Whether the left button is pressed
+	up: function() {
+		return (mouse.leftButtonState == BUTTONSTATE.UP || mouse.leftButtonState == BUTTONSTATE.LETGO);
+	},
+};
+
+// Register the event handlers
+document.onmousemove = mouse.moveHandler;
+document.onmousedown = mouse.downHandler;
+document.onmouseup = mouse.upHandler;
+
+return mouse;
+
+});

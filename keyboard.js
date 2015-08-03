@@ -1,98 +1,126 @@
-JUEGO.LOG_KEYBOARD = false;
-
-var KEY = {
-	UP : 38,
-	DOWN : 40,
-	LEFT : 37,
-	RIGHT : 39,
-	A : 65,
-	B : 66,
-	C : 67,
-	D : 68,
-	E : 69,
-	F : 70,
-	G : 71,
-	H : 72,
-	I : 73,
-	J : 74,
-	K : 75,
-	L : 76,
-	M : 77,
-	N : 78,
-	O : 79,
-	P : 80,
-	Q : 81,
-	R : 82,
-	S : 83,
-	T : 84,
-	U : 85,
-	V : 86,
-	W : 87,
-	X : 88,
-	Y : 89,
-	Z : 90,
-	NUM_KEYS : 128,
-};
+define( [], function() {
 
 var KEYSTATE = {
-	UP : 0,
-	HIT : 1,
-	HELD : 2,
-}
+	UP: 0,
+	HIT: 1,
+	HELD: 2,
+	LETGO: 3,
+	DOUBLETAPPED: 4,
+};
 
-var keyboardState = [];
+var updateCounter = 0;
+var doubleTapInterval = 5;
 
-function resetKeys() {
-	for (var i = 0; i < KEY.NUM_KEYS; i++) {
-		keyboardState[i] = KEYSTATE.UP;
-	}
-}
+var state = [];
+var keyLastHit = [];
 
-resetKeys();
+var keyboard = {
 
-function keyDownHandler(e) {
-	//if (JUEGO.LOG_KEYBOARD) // console.log("Key " + e.keyCode + " down");
-	if (keyboardState[e.keyCode] == KEYSTATE.UP) keyboardState[e.keyCode] = KEYSTATE.HIT;
-}
+	LOG: false,
 
-function keyUpHandler(e) {
-	//if (JUEGO.LOG_KEYBOARD) // console.log("Key " + e.keyCode + " up");
-	keyboardState[e.keyCode] = KEYSTATE.UP;
-}
+	KEY: {
+		A: 65,
+		B: 66,
+		C: 67,
+		D: 68,
+		E: 69,
+		F: 70,
+		G: 71,
+		H: 72,
+		I: 73,
+		J: 74,
+		K: 75,
+		L: 76,
+		M: 77,
+		N: 78,
+		O: 79,
+		P: 80,
+		Q: 81,
+		R: 82,
+		S: 83,
+		T: 84,
+		U: 85,
+		V: 86,
+		W: 87,
+		X: 88,
+		Y: 89,
+		Z: 90,
+		SPACE: 32,
+		UP: 38,
+		DOWN: 40,
+		LEFT: 37,
+		RIGHT: 39,		
+	},
 
-function keyboardStateUpdater() {
-	for (var i = 0; i < KEY.NUM_KEYS; i++) {
-		if (keyboardState[i] == KEYSTATE.HIT) {
-			keyboardState[i] = KEYSTATE.HELD;
+ 	keyLastHit: [],
+
+	resetKeys: function() {
+		for ( key in keyboard.KEY ) {
+			state[keyboard.KEY[key]] = KEYSTATE.UP;
+			keyLastHit[keyboard.KEY[key]] = -Infinity;
 		}
-	}
-}
+	},
 
-function keyHit(key) {
-	return (keyboardState[key] == KEYSTATE.HIT);
-}
-
-function keyHeld(key) {
-	return (keyboardState[key] == KEYSTATE.HIT || keyboardState[key] == KEYSTATE.HELD);
-}
-
-function anyKeyHit() {
-	for (var i = 0; i < KEY.NUM_KEYS; i++) {
-		if (keyboardState[i] == KEYSTATE.HIT || keyboardState[i] == KEYBOARD.HELD) {
-			return true;
+	keyDownHandler: function( e ) {
+		if ( keyboard.LOG_KEYBOARD ) console.log( "Key " + e.keyCode + " down" );
+		if ( state[e.keyCode] == KEYSTATE.UP ) {	
+			state[e.keyCode] = KEYSTATE.HIT;
 		}
-	}
+	},
+
+	keyUpHandler: function( e ) {
+		if ( keyboard.LOG_KEYBOARD ) console.log( "Key " + e.keyCode + " up" );
+		state[e.keyCode] = KEYSTATE.LETGO;
+		if ( updateCounter - keyLastHit[e.keyCode] < doubleTapInterval)  {
+			state[e.keyCode] = KEYSTATE.DOUBLETAPPED;
+		}
+		keyLastHit[e.keyCode] = updateCounter;
+	},
+
+	updateState: function() {
+		for ( key in keyboard.KEY ) {
+			if ( state[keyboard.KEY[key]] == KEYSTATE.HIT ) {
+				state[keyboard.KEY[key]] = KEYSTATE.HELD;
+			}
+			if ( state[keyboard.KEY[key]] == KEYSTATE.LETGO || state[keyboard.KEY[key]] == KEYSTATE.DOUBLETAPPED ) {
+				state[keyboard.KEY[key]] = KEYSTATE.UP;
+			}
+		}
+
+		updateCounter++;
+	},
+
+	keyDoubleTapped: function( key ) {
+		return ( state[key] == KEYSTATE.DOUBLETAPPED );
+	},
+
+	keyHit: function( key ) {
+		return ( state[key] == KEYSTATE.HIT );
+	},
+
+	keyHeld: function( key ) {
+		return ( state[key] == KEYSTATE.HIT || state[key] == KEYSTATE.HELD );
+	},
+
+	keyLetGo: function( key ) {
+		return ( state[key] == KEYSTATE.LETGO );
+	},
+
+	anyKeyHit: function() {
+		for ( key in keyboard.KEY ) {
+			if ( state[KEY[key]] == KEYSTATE.HIT || state[keyboard.KEY[key]] == KEYBOARD.HELD ) {
+				return true;
+			}
+		}
 	
-	return false;
-}
-/*
-JUEGO.keyboardEvents = [];
+		return false;
+	},
+};
 
-JUEGO.KeyboardEvent = function( action, func ) {
-	this.action = action;
-	this.func = func;
-}
+keyboard.resetKeys();
+document.onkeyup = keyboard.keyUpHandler;
+document.onkeydown = keyboard.keyDownHandler;
 
-function registerKeyEvent( action, func ) {
-	keyboardEvents.push( new JUEGO.KeyboardEvent( action, func ) );
-};*/
+return keyboard;
+
+});

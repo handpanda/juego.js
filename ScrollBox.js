@@ -10,7 +10,7 @@
 	
 */
 
-define( [], function() {
+define( [ "juego/util" ], function( util ) {
 
 var ScrollBox = function( parameters ) {
 	
@@ -77,11 +77,11 @@ ScrollBox.prototype.calcValues = function() {
 ///////////////////
 
 ScrollBox.prototype.screenXToTile = function ( posX ) {
-	return cap( Math.floor( ( posX / this.scale + this.hScroll ) / this.tileW ), 0, this.hTiles );
+	return util.cap( Math.floor( ( posX / this.scale + this.hScroll ) / this.tileW ), 0, this.hTiles );
 }
 
 ScrollBox.prototype.screenYToTile = function ( posY ) {
-	return cap( Math.floor( ( posY / this.scale + this.vScroll ) / this.tileH ), 0, this.vTiles );
+	return util.cap( Math.floor( ( posY / this.scale + this.vScroll ) / this.tileH ), 0, this.vTiles );
 }
 
 ////////////////////
@@ -142,7 +142,7 @@ ScrollBox.prototype.updateScroll = function() {
 
 	if ( this.hPixels > this.viewportW ) { // If the whole map does not fit in the viewport horizontally, we can scroll
 		
-		this.hScroll = cap(hScroll, 0, this.hPixels - this.viewportW );
+		this.hScroll = util.cap(hScroll, 0, this.hPixels - this.viewportW );
 		this.hLoTileIndex = Math.floor( this.hScroll / this.tileW );
 		this.hHiTileIndex = Math.ceil( ( this.hScroll + this.viewportW ) / this.tileW );
 		this.hOffset = this.hLoTileIndex * this.tileW - this.hScroll;
@@ -157,7 +157,7 @@ ScrollBox.prototype.updateScroll = function() {
 	
 	if ( this.vPixels > this.viewportH ) { // If the whole map does not fit in the viewport vertically, we can scroll
 	
-		this.vScroll = cap( vScroll, 0, this.vPixels - this.viewportH );
+		this.vScroll = util.cap( vScroll, 0, this.vPixels - this.viewportH );
 		this.vLoTileIndex = Math.floor( this.vScroll / this.tileH);
 		this.vHiTileIndex = Math.ceil( ( this.vScroll + this.viewportH ) / this.tileH );
 		this.vOffset = this.vLoTileIndex * this.tileH - this.vScroll;

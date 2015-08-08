@@ -2,6 +2,12 @@
 // IMAGE.JS //
 //////////////
 
+define ( ["juego/util"], function( util ) {
+
+var TileArray = util.TileArray;
+
+var exports = {};
+
 /*
 	A set of Javascript image utility classes
 
@@ -23,10 +29,10 @@
 			
 		EXAMPLE:
 			
-			var IMGbird = new AnimatedImage('bird.png', 16, 16, 2, 2); <--------------------------------- AnimatedImage
+			var IMGbird = new AnimatedImage('bird.png', 16, 16, 2, 2); <------ AnimatedImage
 			
 			var ANIMs = {
-				birdSTAND : new Animation('Bird Stand', IMGbird, [0], 1), <-------------------------- Animation
+				birdSTAND : new Animation('Bird Stand', IMGbird, [0], 1), <------- Animation
 				birdFLY : new Animation('Bird Fly', IMGbird, [4, 5, 4, 6, 7], 1),
 				birdDEADFALL : new Animation('Bird Deadfall', IMGbird, [8, 9], 1),
 				birdDEAD : new Animation('Bird Dead', IMGbird, [10], 1),
@@ -63,6 +69,8 @@ RegularImage.prototype.draw = function( context, posX, posY, scale ) {
 	context.drawImage( this.image, posX, posY, this.image.width * scale, this.image.height * scale );
 }
 
+exports.RegularImage = RegularImage;
+
 ///////////
 // COLOR //
 ///////////
@@ -81,6 +89,8 @@ Color.prototype.equals = function( otherColor ) {
 					 this.a == otherColor.a );
 }
 
+exports.Color = Color;
+
 /////////////
 // PALETTE //
 /////////////
@@ -89,6 +99,8 @@ var Palette = function( inColors, outColors ) {
 	this.inColors = inColors;
 	this.outColors = outColors;
 }
+
+exports.Palette = Palette;
 
 ///////////////////
 // ANIMATEDIMAGE //
@@ -206,6 +218,8 @@ AnimatedImage.prototype.draw = function( context, posX, posY, frame, scale, hFli
 	context.restore();
 }
 
+exports.AnimatedImage = AnimatedImage;
+
 ///////////////
 // ANIMATION //
 /////////////// 
@@ -227,6 +241,8 @@ Animation.prototype.getFrameIndex = function( frameCounter ) {
 Animation.prototype.hasCompleted = function( frameCounter ) {
 	return ( Math.floor( frameCounter / this.timePerFrame ) >= this.numFrames );
 }
+
+exports.Animation = Animation;
 
 /////////////////////
 // ANIMATIONRUNNER //
@@ -357,3 +373,9 @@ AnimationRunner.prototype.draw = function( context ) {
 		}
 	context.restore();
 }
+
+exports.AnimationRunner = AnimationRunner;
+
+return exports;
+
+});

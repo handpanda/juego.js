@@ -69,6 +69,8 @@ var mouse = {
 		mouse.line.y2 = mouse.pos.y;
 
 		if (mouse.LOG_MOUSE) console.log("Mouse moved to " + mouse.x + "," + mouse.y);
+	
+		
 	},
 
 	// Update the left button state when we receive and button press event
@@ -82,7 +84,7 @@ var mouse = {
 
 	// Update the left button state when we receive and button release event
 	upHandler: function(e) {
-	if (mouse.LOG_MOUSE) console.log("Mouse button up");
+		if (mouse.LOG_MOUSE) console.log("Mouse button up");
 
 		mouse.start.set( mouse.pos );
 

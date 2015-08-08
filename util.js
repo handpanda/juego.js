@@ -1,20 +1,24 @@
-var cap = function(val, lo, hi) {
+define( [], function() {
+
+util = {};
+
+util.cap = function(val, lo, hi) {
 	if (val < lo) val = lo;
 	if (val > hi - 1) val = hi - 1;
 	
 	return val;
 }
 
-var toggle = function(val) {
+util.toggle = function(val) {
 	if (val) return false;
 	else return true;
 }
 
-var discrand = function(min, max) {
+util.discrand = function(min, max) {
 	return min + Math.floor(Math.random() * (max - min));
 }
 
-var tilearray = function(layers, rowlength, tiles) {
+util.TileArray = function(layers, rowlength, tiles) {
 	this.layers = layers;
 	this.rowlength = rowlength;
 	this.tiles = tiles;
@@ -36,8 +40,12 @@ var tilearray = function(layers, rowlength, tiles) {
 	}
 }
 
-var level = function(name, layers, sheets, rowlength, tiles) {
+util.level = function(name, layers, sheets, rowlength, tiles) {
 	this.name = name;
 	this.sheets = sheets;
 	this.data = new tilearray(layers, rowlength, tiles);
 }
+
+return util;
+
+});

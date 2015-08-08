@@ -106,6 +106,10 @@ var keyboard = {
 		return ( state[key] == KEYSTATE.LETGO );
 	},
 
+	keyState: function( key ) {
+		return state[key];
+	},
+
 	anyKeyHit: function() {
 		for ( key in keyboard.KEY ) {
 			if ( state[KEY[key]] == KEYSTATE.HIT || state[keyboard.KEY[key]] == KEYBOARD.HELD ) {
